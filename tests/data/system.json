@@ -1,0 +1,16 @@
+{
+    "name": "jol1_test",
+    "sequences": [
+        {
+            "proteinChain": {
+                "sequence": "MAEVIRSSAFWRSFPIFEEFDSETLCELSGIASYRKWSAGTVIFQRGD",
+                "count": 2,
+                "pairedMsaPath": "tests/data/msa/pairing.a3m",
+                "unpairedMsaPath": "tests/data/msa/non_pairing.a3m"
+            }
+        },
+        {"dnaSequence": {"sequence": "GACTCG", "count": 1}},
+        {"ligand": {"ligand": "CCD_ATP", "count": 1}},
+        {"ion": {"ion": "MG", "count": 1}}
+    ]
+}

@@ -1,0 +1,60 @@
+[project]
+name = "jol1"
+version = "0.1.0"
+description = "JAX/Equinox port of the Mol-1 biomolecular structure prediction model."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = "==3.12.*"
+dependencies = [
+    "einops>=0.8",
+    "equinox>=0.13",
+    "jax>=0.7",
+    "jaxtyping>=0.3",
+    "numpy>=2.0",
+]
+
+[project.optional-dependencies]
+# Weight conversion, featurization (input JSON -> Features) and parity tests use the
+# PyTorch reference implementation; the JAX model itself never imports torch.
+reference = [
+    "molence",
+    "torch>=2.7",
+]
+cuda = [
+    "jax[cuda12]>=0.7",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.9",
+]
+
+[tool.uv.sources]
+molence = { git = "https://github.com/molence/Mol-1", rev = "7480cc4" }
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not reference'"
+markers = [
+    "reference: needs the `reference` extra, the Mol-1 checkpoint and reference data",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP"]
+ignore = ["F722", "UP037"]  # jaxtyping shape strings are not forward references

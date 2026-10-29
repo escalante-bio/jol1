@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Converted weights and outputs
+*.eqx
+*.skeleton.pkl
+outputs/
+refs/
+mol_data/
+tests/captures/

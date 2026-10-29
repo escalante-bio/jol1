@@ -1,0 +1,16 @@
+jol1: a JAX/Equinox port of Mol-1.
+
+Mol-1 (https://github.com/molence/Mol-1, reference commit 7480cc4)
+Copyright 2026 Molence Bio. Licensed under the Apache License, Version 2.0.
+
+Mol-1 is based on Protenix (https://github.com/bytedance/Protenix)
+Copyright 2024 ByteDance and/or its affiliates. Licensed under the Apache License, Version 2.0.
+
+Portions of Mol-1 / Protenix derive from OpenFold
+(https://github.com/aqlaboratory/openfold), Copyright 2021 AlQuraishi Laboratory,
+Licensed under the Apache License, Version 2.0.
+
+Model weights are distributed by Molence Bio and are not redistributed here.
+
+Test data in tests/data/ (the system description and the cropped MSAs) is derived from
+the Mol-1 example inputs (examples/7pzb), Apache License, Version 2.0.
