@@ -129,18 +129,27 @@ class Mol1(eqx.Module):
         inputs: InputEmbedding,
         *,
         num_cycles: int,
-        key: PRNGKeyArray,
+        key: PRNGKeyArray | None = None,
+        msa_rows: int | None = None,
     ) -> TrunkState:
         """``num_cycles`` trunk passes from a zero state (the reference default is 20).
 
-        Every pass uses a random MSA subset drawn from ``key`` as the reference does at
-        inference (use :meth:`cycle` to choose the rows yourself). As in the reference,
-        only the last pass is differentiated."""
+        ``msa_rows`` keeps only the leading MSA rows (the query first); ``None`` keeps
+        all. With ``key``, every pass uses a random subset of them, as the reference does
+        at inference; without, every pass uses all of them, so the trunk is deterministic
+        (e.g. for design gradients). Use :meth:`cycle` to choose the rows yourself. As in
+        the reference, only the last pass is differentiated."""
         if num_cycles < 1:
             raise ValueError(f"num_cycles must be at least 1, got {num_cycles}")
+        features = eqx.tree_at(
+            lambda f: f.msa, features, jax.tree.map(lambda x: x[:msa_rows], features.msa)
+        )
         num_rows = features.msa.msa.shape[0]
-        keys = jax.random.split(key, num_cycles)
-        masks = jax.vmap(lambda k: sample_msa_rows(k, num_rows, self.msa_max_rows))(keys)
+        if key is None:
+            masks = jnp.ones((num_cycles, num_rows), bool)
+        else:
+            keys = jax.random.split(key, num_cycles)
+            masks = jax.vmap(lambda k: sample_msa_rows(k, num_rows, self.msa_max_rows))(keys)
 
         state = TrunkState(s=jnp.zeros_like(inputs.s_init), z=jnp.zeros_like(inputs.z_init))
         state = jax.lax.fori_loop(

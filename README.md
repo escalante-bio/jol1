@@ -74,7 +74,7 @@ several samples.
 
 ```python
 Mol1.embed(features) -> InputEmbedding                         # s_inputs, s_init, z_init
-Mol1.trunk(features, inputs, *, num_cycles, key) -> TrunkState   # s, z
+Mol1.trunk(features, inputs, *, num_cycles, key=None, msa_rows=None) -> TrunkState  # s, z
 Mol1.cycle(features, inputs, state, msa_row_mask) -> TrunkState      # one recycle
 Mol1.distogram_logits(state) -> f32[T, T, 64]
 Mol1.diffusion_context(features, inputs, state) -> DiffusionContext
@@ -97,8 +97,10 @@ save_model(model, path) / load_model(path)
   is differentiated; earlier outputs are `stop_gradient`-ed.
 - **MSA subsampling.** At inference the reference draws a fresh random MSA subset every
   cycle (size uniform in `[1, S]`). Rows only interact through the outer-product mean, so
-  a row mask reproduces this exactly with static shapes. `trunk` always subsamples, from
-  its `key`; call `cycle` with your own row masks (e.g. all ones) to choose the rows.
+  a row mask reproduces this exactly with static shapes. `trunk` subsamples when given a
+  `key`; without one it uses every row each cycle (deterministic, e.g. for design).
+  `msa_rows` keeps only the leading rows (the query first), which bounds the cost of the
+  MSA module; call `cycle` with your own row masks to choose the rows.
 - **Templates** always run: without template hits the featurizer emits four all-gap
   templates, and the embedder averages over them, as in the reference.
 - **Diffusion caching.** Pair conditioning, atom conditioning and every attention pair
